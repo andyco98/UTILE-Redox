@@ -9,7 +9,7 @@ from matplotlib import cm
 
 ### TO DO ###
 # 1 Save visualizations in some way that is reproducible without re analyzing the whole stack
-# 2 
+
 
 
 
@@ -361,7 +361,7 @@ def visualize_property(property, labeled_volume, csv_file):
 
 
 # # # # # Read the TIF stack and convert it to a numpy array
-# volume = tifffile.imread('C:/Users/a.colliard/Desktop/zeis_imgs/s10.tif')
+# volume = tifffile.imread('C:/Users/andre/Desktop/zeis/maskS9.tif')
 # cleaned_volume = remove_isolated_pixels2(volume, target_class=1)
 # # # # cleaned_volume = remove_small_objects(cleaned_volume, target_class=1)
 
@@ -379,8 +379,8 @@ def visualize_property(property, labeled_volume, csv_file):
 # print(num_features)
 # # # # #Visualize the volume
 
-# #visualize_volume(left_volume)
+#visualize_volume(left_volume)
 
-# # csv_file = "./output.csv"
+# csv_file = "./output.csv"
 
-# # visualize_property("closest_distance", labeled_volume, num_features, csv_file)
+# visualize_property("closest_distance", labeled_volume, num_features, csv_file)
