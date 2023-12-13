@@ -292,7 +292,7 @@ def individual_analysis(volume, membrane_class=2):
 
 
     # Specify the filename
-    filename = f"C:/Users/andre/Desktop/zeis/output.csv"
+    filename = f"C:/Users/a.colliard/Desktop/zeis_imgs/output.csv"
 
     # Write to CSV
     with open(filename, 'w', newline='') as csvfile:
@@ -304,26 +304,28 @@ def individual_analysis(volume, membrane_class=2):
         # Write the data
         csvwriter.writerows(data)
 
+    np.save("C:/Users/a.colliard/Desktop/zeis_imgs/filtered_volume.npy", filtered_volume)
+
     return filtered_volume, membrane_coordinates
 
 
-volume = tifffile.imread('C:/Users/andre/Desktop/zeis/maskS9.tif')
+volume = tifffile.imread('C:/Users/a.colliard/Desktop/zeis_imgs/exp.tif')
 print("Volume load done!")
 
-left_volume, right_volume = separate_volume(volume)
+#left_volume, right_volume = separate_volume(volume)
 print("Separation done!")
 
 # clean the volume
-cleaned_volume = clean_volume(left_volume)
+cleaned_volume = clean_volume(volume)
 print("Cleaning volume done!")
 
 
 #bubble_ratio(cleaned_volume)
 filtered_volume, membrane_coords = individual_analysis(cleaned_volume)
 
-csv_file = "C:/Users/andre/Desktop/zeis/output.csv"
+csv_file = "C:/Users/a.colliard/Desktop/zeis_imgs/output.csv"
 
-visualize_property("closest_distance", filtered_volume, csv_file)
+visualize_property("closest_distance", filtered_volume, csv_file, side="whole")
 visualize_property("volume", filtered_volume, csv_file)
 visualize_property("sphericity", filtered_volume, csv_file)
 

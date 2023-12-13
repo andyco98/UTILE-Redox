@@ -10,10 +10,10 @@ import csv
 
 
 ### TO DO ###
-# filttering does not work properly and the property visualization stopped working
 # 2 Enhance the visualization with ParaView, or just wrtie some scripts to automate the tranfer to paraview?
 # 2 Recheck wall proximity plotting, since we normalize the values to get a good color mapping the values can be exaggereted, we need to set in that specific case the center of the volume as reference...
 # 3 Multithreading of the bubble looping to accelerate the analysis
+# 4 Does it work well for the whole cell?
 
 labeled_volume = None
 
@@ -336,14 +336,14 @@ def individual_analysis(volume, membrane_class=2):
     return filtered_volume, membrane_coordinates
 
 
-volume = tifffile.imread('C:/Users/andre/Desktop/zeis/exp_stack.tif')
+volume = tifffile.imread('C:/Users/a.colliard/Desktop/zeis_imgs/exp.tif')
 print("Volume load done!")
 
 left_volume, right_volume = separate_volume(volume)
 print("Separation done!")
 
 # clean the volume
-cleaned_volume = clean_volume(left_volume)
+cleaned_volume = clean_volume(right_volume)
 print("Cleaning volume done!")
 
 

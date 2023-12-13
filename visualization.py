@@ -276,15 +276,27 @@ def clean_volume(volume):
 
 #### NEED TO VISUALIZE INDIVIDUAL PROPERTIES RELATED TO INDIVIDUAL BUBBLES BY COLORING THEM WITH A CORRESPONDING PROPERTY ####
 
-def visualize_property(property, labeled_volume, csv_file):
+def visualize_property(property, labeled_volume, csv_file, side="whole"):
 
     #Step 1: read the labeled data and read the corresponding csv file with the corresponding properties
     df = pd.read_csv(csv_file)
+
     #Step 2: normalize the properties and extract the corresponding value to map the corresponding color
     # Normalize the column
-    normalized_column = (df[property] - df[property].min()) / (df[property].max() - df[property].min())
+    if property == "closest_distance":
+        print(side)
+
+        x,y,z = labeled_volume.shape
+        max_distance = [x*0.25, y*0.25, z*0.25] #The max point should be the shortest side of the volume since it is the limitating factor, but only if the volume has the membrane in the middle
+        max_point = min(max_distance)
+        print(max_point)
+        normalized_column = (df[property] - df[property].min()) / (max_point - df[property].min())
+
+    else: normalized_column = (df[property] - df[property].min()) / (df[property].max() - df[property].min())
+
     norm_property = normalized_column.tolist()
-    print("norm list: ",norm_property, "len:", len(norm_property))
+    #print("norm list: ",norm_property, "len:", len(norm_property))
+
     #Step 3: Create the look up table to assign the correct RGB values to the correct proprety value
     c = cm.get_cmap('jet')
 
@@ -305,7 +317,7 @@ def visualize_property(property, labeled_volume, csv_file):
     for i in range(1, len(norm_property)+1):
         property = norm_property[i-1]
         rgb_color = c(property)
-        print("rgb color ", rgb_color)
+        #print("rgb color ", rgb_color)
         color_transfer_function.AddRGBPoint(i, rgb_color[0], rgb_color[1], rgb_color[2])  # RGB
 
     # Create a scalar opacity function
@@ -361,26 +373,27 @@ def visualize_property(property, labeled_volume, csv_file):
 
 
 # # # # # Read the TIF stack and convert it to a numpy array
-# volume = tifffile.imread('C:/Users/andre/Desktop/zeis/maskS9.tif')
-# cleaned_volume = remove_isolated_pixels2(volume, target_class=1)
+# volume = tifffile.imread('C:/Users/a.colliard/Desktop/zeis_imgs/exp.tif')
+# #cleaned_volume = remove_isolated_pixels2(volume, target_class=1)
 # # # # cleaned_volume = remove_small_objects(cleaned_volume, target_class=1)
 
 # # # # #Set the values of class 2 to 0
 # # # # #volume[volume == 0] = 0
 
-# left_volume,right_volume = separate_volume(cleaned_volume)
+# left_volume,right_volume = separate_volume(volume)
 
 # #left_volume = clean_volume(left_volume)
 # # #Label the bubbles
 # labeled_volume, num_features = label_bubbles(left_volume)
 
 # # # # #Now you can visualize the labeled_volume
-# visualize_labeled_volume(labeled_volume, num_features)
+# #visualize_labeled_volume(labeled_volume, num_features)
 # print(num_features)
-# # # # #Visualize the volume
+# # # # # #Visualize the volume
 
 #visualize_volume(left_volume)
+filtered_volume = np.load("C:/Users/a.colliard/Desktop/zeis_imgs/filtered_volume.npy")
 
-# csv_file = "./output.csv"
+csv_file = "C:/Users/a.colliard/Desktop/zeis_imgs/output.csv"
 
-# visualize_property("closest_distance", labeled_volume, num_features, csv_file)
+visualize_property("closest_distance", filtered_volume, csv_file, side ="left")
