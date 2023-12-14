@@ -391,9 +391,15 @@ def visualize_property(property, labeled_volume, csv_file, side="whole"):
 # print(num_features)
 # # # # # #Visualize the volume
 
-#visualize_volume(left_volume)
-filtered_volume = np.load("C:/Users/a.colliard/Desktop/zeis_imgs/filtered_volume.npy")
 
-csv_file = "C:/Users/a.colliard/Desktop/zeis_imgs/output.csv"
+#visualize_volume(left_volume)
+
+filtered_volume = np.load("C:/Users/a.colliard/Desktop/zeis_imgs/filtered_volume_S9.npy")
+
+csv_file = "C:/Users/a.colliard/Desktop/zeis_imgs/outputS9.csv"
 
 visualize_property("closest_distance", filtered_volume, csv_file, side ="left")
+visualize_property("elongation", filtered_volume, csv_file, side ="left")
+visualize_property("volume", filtered_volume, csv_file, side ="left")
+visualize_property("sphericity", filtered_volume, csv_file, side ="left")
+

@@ -7,8 +7,6 @@ import matplotlib.ticker as ticker
 import tifffile
 
 ## TO DO ##
-# 1 Center the two plot of the bottom part
-
 
 def plot_properties(csv_file):
     #Read the csv
@@ -246,7 +244,7 @@ def plot_properties(csv_file):
 
 
     plt.tight_layout()
-    plt.savefig("./plots.png")
+    plt.savefig("C:/Users/a.colliard/Desktop/zeis_imgs/plotsS9.png")
     plt.show()
 
 
@@ -280,15 +278,16 @@ def plot_densities(stack_path, target_class=1):
     plt.subplot(1, 3, 3)
     plt.imshow(zy_density, cmap='jet')
     plt.title('ZY Plane Density')
-    plt.savefig("./densities.png")
+    plt.savefig("C:/Users/a.colliard/Desktop/zeis_imgs/densitiesS9.png")
     plt.show()
 
     
 
-csv_file = "./output.csv"
+csv_file = "C:/Users/a.colliard/Desktop/zeis_imgs/outputS9.csv"
 
-stack_path = 'C:/Users/a.colliard/Desktop/zeis_imgs/exp.tif'
+stack_path = 'C:/Users/a.colliard/Desktop/zeis_imgs/mask2_reordered.tif'
 
 plot_properties(csv_file)
-#plot_densities(stack_path)
+
+plot_densities(stack_path)
 

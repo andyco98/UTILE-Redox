@@ -10,14 +10,15 @@ import csv
 
 
 ### TO DO ###
-# 2 Enhance the visualization with ParaView, or just wrtie some scripts to automate the tranfer to paraview?
-# 2 Recheck wall proximity plotting, since we normalize the values to get a good color mapping the values can be exaggereted, we need to set in that specific case the center of the volume as reference...
-# 3 Multithreading of the bubble looping to accelerate the analysis
+# 1 Enhance the visualization with ParaView, or just wrtie some scripts to automate the tranfer to paraview?
+# 2 Use the definitions of ITk to compute the elongation and flatness
 
-def bubble_ratio(volume, total_bubble_volume, voxel_dimensions=(1,1,1), bubble_class=1, background_class=0): #needs to be revised, I think it takes the values of the whole cell and not only the right side
+def bubble_ratio(volume, voxel_dimensions=(1,1,1), bubble_class=1, background_class=0): #needs to be revised, I think it takes the values of the whole cell and not only the right side
+
     # Count the number of bubble voxels
-    num_bubble_voxels = total_bubble_volume
+    num_bubble_voxels =  np.sum(volume == bubble_class)
     num_background_voxels = np.sum(volume == background_class)
+
     # Calculate the volume of a single voxel
     voxel_volume = voxel_dimensions[0] * voxel_dimensions[1] * voxel_dimensions[2]
 
@@ -26,7 +27,10 @@ def bubble_ratio(volume, total_bubble_volume, voxel_dimensions=(1,1,1), bubble_c
     total_background_volume = num_background_voxels * voxel_volume
 
     bubble_background_ratio = total_bubble_volume / total_background_volume
-    print("Bubble background ratio:", bubble_background_ratio, "voxels") # Replace 'cubic units' with appropriate unit (e.g., cubic millimeters)
+    print("Total bubble volume: ", total_bubble_volume) 
+    print("Total bubble volume: ", total_background_volume)
+    print("Bubble background ratio:", bubble_background_ratio) # Replace 'cubic units' with appropriate unit (e.g., cubic millimeters)
+
     return bubble_background_ratio
 
 def wall_proximity(args): #first we map the boundaries of the membrane, then we know the volume limits and we compare the centroid coordinates with the plane coordinates of the boundaries
@@ -277,8 +281,6 @@ def individual_analysis(volume, membrane_class=2):
 
     print("Total volume from the individual measurements:", total_bubble_volume)
 
-    bubble_ratio(volume, total_bubble_volume)
-
     ### Visualization of the filtered volume
     print(len(np.unique(filtered_volume)- 1))
     visualize_labeled_volume(filtered_volume, len(np.unique(filtered_volume) - 1))
@@ -309,26 +311,29 @@ def individual_analysis(volume, membrane_class=2):
     return filtered_volume, membrane_coordinates
 
 
-volume = tifffile.imread('C:/Users/a.colliard/Desktop/zeis_imgs/exp.tif')
+volume = tifffile.imread('C:/Users/a.colliard/Desktop/zeis_imgs/mask2_reordered.tif')
 print("Volume load done!")
 
-#left_volume, right_volume = separate_volume(volume)
+left_volume, right_volume = separate_volume(volume)
 print("Separation done!")
 
 # clean the volume
-cleaned_volume = clean_volume(volume)
-print("Cleaning volume done!")
+cleaned_volume = clean_volume(left_volume)
+visualize_volume(cleaned_volume)
+print("Cleaning volume done!", np.unique(cleaned_volume))
+
+bubble_ratio(cleaned_volume)
 
 
-#bubble_ratio(cleaned_volume)
-filtered_volume, membrane_coords = individual_analysis(cleaned_volume)
+# #bubble_ratio(cleaned_volume)
+# filtered_volume, membrane_coords = individual_analysis(cleaned_volume)
 
-csv_file = "C:/Users/a.colliard/Desktop/zeis_imgs/output.csv"
+# csv_file = "C:/Users/a.colliard/Desktop/zeis_imgs/output.csv"
 
-visualize_property("closest_distance", filtered_volume, csv_file, side="whole")
-visualize_property("volume", filtered_volume, csv_file)
-visualize_property("sphericity", filtered_volume, csv_file)
+# visualize_property("closest_distance", filtered_volume, csv_file, side="whole")
+# visualize_property("volume", filtered_volume, csv_file)
+# visualize_property("sphericity", filtered_volume, csv_file)
 
-#visualize_labeled_volume()
-blocking_voxel = membrane_block_visualization(volume, filtered_volume, csv_file, membrane_coords)
+# #visualize_labeled_volume()
+# blocking_voxel = membrane_block_visualization(volume, filtered_volume, csv_file, membrane_coords)
 
