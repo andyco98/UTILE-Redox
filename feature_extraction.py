@@ -7,11 +7,15 @@ from skimage.measure import regionprops, marching_cubes, mesh_surface_area
 from scipy.spatial import cKDTree
 from concurrent.futures import ThreadPoolExecutor
 import csv
-
+from math import sqrt
 
 ### TO DO ###
 # 1 Enhance the visualization with ParaView, or just wrtie some scripts to automate the tranfer to paraview?
 # 2 Use the definitions of ITk to compute the elongation and flatness
+
+
+case_name = "S9"
+
 
 def bubble_ratio(volume, voxel_dimensions=(1,1,1), bubble_class=1, background_class=0): #needs to be revised, I think it takes the values of the whole cell and not only the right side
 
@@ -73,10 +77,11 @@ def wall_proximity(args): #first we map the boundaries of the membrane, then we 
 
     return closest_distance, closest_boundary
 
-def membrane_block_visualization(volume, filtered_volume, csv_file, membrane_coords, bubble_class=1):
-  # Read the CSV file
-    csv_data = pd.read_csv(csv_file)
+def membrane_block_visualization(volume, filtered_volume, bubble_class=1, membrane_class=2):
 
+    membrane_voxels = np.where(volume == membrane_class)
+
+    membrane_coords = list(zip(membrane_voxels[0], membrane_voxels[1], membrane_voxels[2]))
     #Calculate the amount of pixels touching the membrane 
     membrane_with_bubble_neighbors = np.zeros_like(volume, dtype=bool)
     blocking_voxel = 0
@@ -153,7 +158,7 @@ def individual_analysis(volume, membrane_class=2):
     theta_list = []
     phi_list = []    
     sphericity_list = []
-    solidity_list = []
+    flatness_list = []
     elongation_list = []
     major_axis_list = []
     minor_axis_list =[]
@@ -228,10 +233,21 @@ def individual_analysis(volume, membrane_class=2):
 
         # Calculate elongation as the ratio of the largest to smallest eigenvalue
         if sorted_eigenvalues[-1] != 0:
-            elongation = sorted_eigenvalues[0] / sorted_eigenvalues[-1]
+            elongation = sqrt(sorted_eigenvalues[0] / sorted_eigenvalues[1])
         else:
             elongation = float(0)  # Handle division by zero
         print("elongation: ", elongation)
+
+        ##### Flatness calculation #####
+        # Sort eigenvalues in descending order
+        sorted_eigenvalues = sorted(eigenvalues, reverse=True)
+
+        # Calculate elongation as the ratio of the largest to smallest eigenvalue
+        if sorted_eigenvalues[-1] != 0:
+            flatness = sqrt(sorted_eigenvalues[1] / sorted_eigenvalues[-1])
+        else:
+            flatness = float(0)  # Handle division by zero
+        print("flatness: ", flatness)
 
         ##### Centroid calculation #####
 
@@ -248,6 +264,7 @@ def individual_analysis(volume, membrane_class=2):
         theta_list.append(theta)
         phi_list.append(phi)
         elongation_list.append(elongation)
+        flatness_list.append(flatness)
         
         ### Add the ROI to the filtered visaulization ###
         filtered_volume[labeled_volume == prop.label] = passed_objects
@@ -287,14 +304,14 @@ def individual_analysis(volume, membrane_class=2):
 
     ### Write the CSV file with the result lists
 
-    headers = ["label","volume","sphericity","theta", "phi","elongation", "centroid","closest_distance", "closest_wall"]
+    headers = ["label","volume","sphericity","theta", "phi","elongation", "flatness","centroid","closest_distance", "closest_wall"]
 
 
-    data = list(zip(label_list, volume_list, sphericity_list, theta_list, phi_list, elongation_list, centroid_list, closest_distance, closest_wall))
+    data = list(zip(label_list, volume_list, sphericity_list, theta_list, phi_list, elongation_list, flatness_list, centroid_list, closest_distance, closest_wall))
 
 
     # Specify the filename
-    filename = f"C:/Users/a.colliard/Desktop/zeis_imgs/output.csv"
+    filename = f"C:/Users/andre/Desktop/zeis/output_{case_name}.csv"
 
     # Write to CSV
     with open(filename, 'w', newline='') as csvfile:
@@ -306,34 +323,36 @@ def individual_analysis(volume, membrane_class=2):
         # Write the data
         csvwriter.writerows(data)
 
-    np.save("C:/Users/a.colliard/Desktop/zeis_imgs/filtered_volume.npy", filtered_volume)
+    np.save(f"C:/Users/andre/Desktop/zeis/filtered_volume_{case_name}.npy", filtered_volume)
 
     return filtered_volume, membrane_coordinates
 
 
-volume = tifffile.imread('C:/Users/a.colliard/Desktop/zeis_imgs/mask2_reordered.tif')
+volume = tifffile.imread('C:/Users/andre/Desktop/zeis/maskS9.tif')
 print("Volume load done!")
 
 left_volume, right_volume = separate_volume(volume)
 print("Separation done!")
 
 # clean the volume
-cleaned_volume = clean_volume(left_volume)
+cleaned_volume = clean_volume(volume)
+
 visualize_volume(cleaned_volume)
+
 print("Cleaning volume done!", np.unique(cleaned_volume))
 
 bubble_ratio(cleaned_volume)
 
 
 # #bubble_ratio(cleaned_volume)
-# filtered_volume, membrane_coords = individual_analysis(cleaned_volume)
+filtered_volume, membrane_coords = individual_analysis(cleaned_volume)
 
-# csv_file = "C:/Users/a.colliard/Desktop/zeis_imgs/output.csv"
+csv_file =f"C:/Users/andre/Desktop/zeis/output_{case_name}.csv"
 
-# visualize_property("closest_distance", filtered_volume, csv_file, side="whole")
-# visualize_property("volume", filtered_volume, csv_file)
-# visualize_property("sphericity", filtered_volume, csv_file)
+visualize_property("closest_distance", filtered_volume, csv_file, side="whole")
+visualize_property("volume", filtered_volume, csv_file)
+visualize_property("sphericity", filtered_volume, csv_file)
 
-# #visualize_labeled_volume()
-# blocking_voxel = membrane_block_visualization(volume, filtered_volume, csv_file, membrane_coords)
+#visualize_labeled_volume()
+blocking_voxel = membrane_block_visualization(volume, filtered_volume, membrane_coords)
 

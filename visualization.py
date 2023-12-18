@@ -8,9 +8,6 @@ from matplotlib import cm
 
 
 ### TO DO ###
-# 1 Save visualizations in some way that is reproducible without re analyzing the whole stack
-
-
 
 
 def visualize_volume(volume):
@@ -136,18 +133,6 @@ def visualize_labeled_volume(labeled_volume, num_labels):
     render_window_interactor = vtk.vtkRenderWindowInteractor()
     render_window_interactor.SetRenderWindow(render_window)
 
-    # Assuming 'volume' is your vtkImageData object
-
-        # Create a writer for the VTK XML format
-    writer = vtk.vtkXMLImageDataWriter()
-
-    writer.SetFileName("./labeled_volume.vti")
-
-    # Set the input data - use vtk_image instead of volume
-    writer.SetInputData(vtk_image)
-
-    # Write the file
-    writer.Write()
     # Start interaction
     render_window.Render()
     render_window_interactor.Start()
@@ -276,11 +261,11 @@ def clean_volume(volume):
 
 #### NEED TO VISUALIZE INDIVIDUAL PROPERTIES RELATED TO INDIVIDUAL BUBBLES BY COLORING THEM WITH A CORRESPONDING PROPERTY ####
 
-def visualize_property(property, labeled_volume, csv_file, side="whole"):
+def visualize_property(property, labeled_volume, csv_file, log = False, side="whole"):
 
     #Step 1: read the labeled data and read the corresponding csv file with the corresponding properties
     df = pd.read_csv(csv_file)
-
+    property_df = df[property][df[property] > 0]
     #Step 2: normalize the properties and extract the corresponding value to map the corresponding color
     # Normalize the column
     if property == "closest_distance":
@@ -290,11 +275,16 @@ def visualize_property(property, labeled_volume, csv_file, side="whole"):
         max_distance = [x*0.25, y*0.25, z*0.25] #The max point should be the shortest side of the volume since it is the limitating factor, but only if the volume has the membrane in the middle
         max_point = min(max_distance)
         print(max_point)
-        normalized_column = (df[property] - df[property].min()) / (max_point - df[property].min())
+        normalized_column = (property_df - property_df.min()) / (max_point - property_df.min())
 
-    else: normalized_column = (df[property] - df[property].min()) / (df[property].max() - df[property].min())
+    else: 
+        if log:
+            normalized_column = (np.log10(property_df) - np.log10(property_df).min()) / (np.log10(property_df).max() - np.log10(property_df).min())
+        else: normalized_column = (property_df - property_df.min()) / (property_df.max() - property_df.min())
 
     norm_property = normalized_column.tolist()
+
+    print(df[property])
     #print("norm list: ",norm_property, "len:", len(norm_property))
 
     #Step 3: Create the look up table to assign the correct RGB values to the correct proprety value
@@ -354,18 +344,6 @@ def visualize_property(property, labeled_volume, csv_file, side="whole"):
     render_window_interactor = vtk.vtkRenderWindowInteractor()
     render_window_interactor.SetRenderWindow(render_window)
 
-    # Assuming 'volume' is your vtkImageData object
-
-        # Create a writer for the VTK XML format
-    writer = vtk.vtkXMLImageDataWriter()
-
-    writer.SetFileName("./labeled_volume.vti")
-
-    # Set the input data - use vtk_image instead of volume
-    writer.SetInputData(vtk_image)
-
-    # Write the file
-    writer.Write()
     # Start interaction
     render_window.Render()
     render_window_interactor.Start()
@@ -392,14 +370,14 @@ def visualize_property(property, labeled_volume, csv_file, side="whole"):
 # # # # # #Visualize the volume
 
 
-#visualize_volume(left_volume)
+# # #visualize_volume(left_volume)
 
-filtered_volume = np.load("C:/Users/a.colliard/Desktop/zeis_imgs/filtered_volume_S9.npy")
+# filtered_volume = np.load("C:/Users/andre/Desktop/zeis/filtered_volume_s10.npy")
 
-csv_file = "C:/Users/a.colliard/Desktop/zeis_imgs/outputS9.csv"
+# csv_file = "C:/Users/andre/Desktop/zeis/output_s10.csv"
 
-visualize_property("closest_distance", filtered_volume, csv_file, side ="left")
-visualize_property("elongation", filtered_volume, csv_file, side ="left")
-visualize_property("volume", filtered_volume, csv_file, side ="left")
-visualize_property("sphericity", filtered_volume, csv_file, side ="left")
-
+# #visualize_property("closest_distance", filtered_volume, csv_file, side ="whole")
+# visualize_property("elongation", filtered_volume, csv_file, side ="whole", log=True)
+# visualize_property("volume", filtered_volume, csv_file, side ="whole", log=True)
+# #visualize_property("sphericity", filtered_volume, csv_file, side ="whole")
+# visualize_property("flatness", filtered_volume, csv_file, side ="whole", log=True)
