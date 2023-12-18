@@ -11,10 +11,8 @@ from math import sqrt
 
 ### TO DO ###
 # 1 Enhance the visualization with ParaView, or just wrtie some scripts to automate the tranfer to paraview?
-# 2 Use the definitions of ITk to compute the elongation and flatness
 
-
-case_name = "S9"
+case_name = "S7"
 
 
 def bubble_ratio(volume, voxel_dimensions=(1,1,1), bubble_class=1, background_class=0): #needs to be revised, I think it takes the values of the whole cell and not only the right side
@@ -328,31 +326,33 @@ def individual_analysis(volume, membrane_class=2):
     return filtered_volume, membrane_coordinates
 
 
-volume = tifffile.imread('C:/Users/andre/Desktop/zeis/maskS9.tif')
-print("Volume load done!")
+volume = tifffile.imread('C:/Users/andre/Desktop/zeis/s7_stack.tif')
+# print("Volume load done!")
 
-left_volume, right_volume = separate_volume(volume)
-print("Separation done!")
+# left_volume, right_volume = separate_volume(volume)
+# print("Separation done!")
 
-# clean the volume
-cleaned_volume = clean_volume(volume)
+# # clean the volume
+# cleaned_volume = clean_volume(volume)
 
-visualize_volume(cleaned_volume)
+# visualize_volume(cleaned_volume)
 
-print("Cleaning volume done!", np.unique(cleaned_volume))
+# print("Cleaning volume done!", np.unique(cleaned_volume))
 
-bubble_ratio(cleaned_volume)
+# bubble_ratio(cleaned_volume)
 
 
-# #bubble_ratio(cleaned_volume)
-filtered_volume, membrane_coords = individual_analysis(cleaned_volume)
+# # #bubble_ratio(cleaned_volume)
+#filtered_volume, membrane_coords = individual_analysis(cleaned_volume)
 
-csv_file =f"C:/Users/andre/Desktop/zeis/output_{case_name}.csv"
+# csv_file =f"C:/Users/andre/Desktop/zeis/output_{case_name}.csv"
 
-visualize_property("closest_distance", filtered_volume, csv_file, side="whole")
-visualize_property("volume", filtered_volume, csv_file)
-visualize_property("sphericity", filtered_volume, csv_file)
+# visualize_property("closest_distance", filtered_volume, csv_file, side="whole")
+# visualize_property("volume", filtered_volume, csv_file)
+# visualize_property("sphericity", filtered_volume, csv_file)
 
 #visualize_labeled_volume()
-blocking_voxel = membrane_block_visualization(volume, filtered_volume, membrane_coords)
+
+filtered_volume = np.load("C:/Users/andre/Desktop/zeis/filtered_volume_S7.npy")
+blocking_voxel = membrane_block_visualization(volume, filtered_volume)
 
