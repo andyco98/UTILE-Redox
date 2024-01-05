@@ -439,14 +439,14 @@ def npy_to_vtk(npy_file, vtk_file):
 
 # # #visualize_volume(left_volume)
 
-# filtered_volume = np.load("C:/Users/andre/Desktop/zeis/filtered_volume_s10.npy")
+filtered_volume = np.load("C:/Users/andre/Desktop/zeis/filtered_volume_s10.npy")
 
-# csv_file = "C:/Users/andre/Desktop/zeis/output_s10.csv"
+csv_file = "C:/Users/andre/Desktop/zeis/output_s10.csv"
 
-# #visualize_property("closest_distance", filtered_volume, csv_file, side ="whole")
-# visualize_property("elongation", filtered_volume, csv_file, side ="whole", log=True)
-# visualize_property("volume", filtered_volume, csv_file, side ="whole", log=True)
-# #visualize_property("sphericity", filtered_volume, csv_file, side ="whole")
-# visualize_property("flatness", filtered_volume, csv_file, side ="whole", log=True)
+#visualize_property("closest_distance", filtered_volume, csv_file, side ="whole")
+visualize_property("elongation", filtered_volume, csv_file, side ="whole", log=True)
+visualize_property("volume", filtered_volume, csv_file, side ="whole", log=True)
+#visualize_property("sphericity", filtered_volume, csv_file, side ="whole")
+visualize_property("flatness", filtered_volume, csv_file, side ="whole", log=True)
 
 #visualize_volume_realistic(volume)
