@@ -75,58 +75,7 @@ def wall_proximity(args): #first we map the boundaries of the membrane, then we 
 
     return closest_distance, closest_boundary
 
-def membrane_block_visualization(volume, filtered_volume, bubble_class=1, membrane_class=2):
 
-    membrane_voxels = np.where(volume == membrane_class)
-
-    membrane_coords = list(zip(membrane_voxels[0], membrane_voxels[1], membrane_voxels[2]))
-    #Calculate the amount of pixels touching the membrane 
-    membrane_with_bubble_neighbors = np.zeros_like(volume, dtype=bool)
-    blocking_voxel = 0
-    # Define neighbor offsets for a 6-connected neighborhood
-    neighbor_offsets = [
-        (-1, 0, 0), (1, 0, 0),  # x-axis neighbors
-        (0, -1, 0), (0, 1, 0),  # y-axis neighbors
-        (0, 0, -1), (0, 0, 1)   # z-axis neighbors
-    ]
-
-    touching_bubble_label = []
-    #Step 1: find membrane pixel with bubble neighbor and get the coordinate
-
-    # Iterate over membrane coordinates
-    for z, y, x in membrane_coords:
-        # Check each neighboring voxel
-        for dz, dy, dx in neighbor_offsets:
-            nz, ny, nx = z + dz, y + dy, x + dx
-            # Check if neighbor is within bounds and if it's a bubble
-            if 0 <= nz < volume.shape[0] and 0 <= ny < volume.shape[1] and 0 <= nx < volume.shape[2]:
-                if volume[nz, ny, nx] == bubble_class:
-                    membrane_with_bubble_neighbors[z, y, x] = True
-                    blocking_voxel += 1
-                    if filtered_volume[nz,ny,nx] not in touching_bubble_label: touching_bubble_label.append(filtered_volume[nz,ny,nx])
-                    #print("touching_bubble_coordinate", touching_bubble_label)
-                    break  # Stop checking other neighbors
-
-    print("Blocking voxel number", blocking_voxel)
-
-
-    #Step 2: check the corresponding labeled bubble to that pixel
-    
-    new_volume = np.zeros_like(filtered_volume)
-
-    for label in touching_bubble_label:
-        if label != 0:
-            new_volume[filtered_volume == label] = 1
-        else: continue
-    #Step 3: just show the bubbles with those values and remove the other ones
-    for class_label in np.unique(volume):
-        if class_label not in [0, 1]:  # Assuming 0 is background, 1 is bubble
-            new_volume[volume == class_label] = class_label
-
-    print("Blocking bubble visualization")
-    visualize_volume(new_volume)
-
-    return blocking_voxel
 
 def individual_analysis(volume, membrane_class=2):
 

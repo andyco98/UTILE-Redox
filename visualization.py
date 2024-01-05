@@ -5,12 +5,13 @@ import numpy as np
 from scipy.ndimage import label, generate_binary_structure
 import pandas as pd
 from matplotlib import cm
-
+import os
+import math
 
 ### TO DO ###
 
 
-def visualize_volume(volume):
+def visualize_volume(volume, capture = False):
     # Convert numpy array to VTK array
     vtk_data_array = numpy_support.numpy_to_vtk(num_array=volume.transpose(2, 1, 0).ravel(), deep=True, array_type=vtk.VTK_UNSIGNED_CHAR)
 
@@ -59,9 +60,53 @@ def visualize_volume(volume):
     render_window_interactor = vtk.vtkRenderWindowInteractor()
     render_window_interactor.SetRenderWindow(render_window)
 
-    # Start interaction
-    render_window.Render()
-    render_window_interactor.Start()
+    if capture == True:
+            volume_dims = vtk_volume.GetMapper().GetInput().GetDimensions()
+            capture_frames(render_window, renderer, vtk_volume, volume_dims, num_frames=360)
+    else:
+        # Start interaction
+        render_window.Render()
+        render_window_interactor.Start()
+
+def visualize_real_volume(volume, capture = False):
+    # Convert numpy array to VTK array
+    vtk_data_array = numpy_support.numpy_to_vtk(num_array=volume.transpose(2, 1, 0).ravel(), deep=True, array_type=vtk.VTK_UNSIGNED_CHAR)
+
+    # Create a VTK image data object
+    vtk_image = vtk.vtkImageData()
+    vtk_image.SetDimensions(volume.shape)
+    vtk_image.GetPointData().SetScalars(vtk_data_array)
+    
+    # Ambient, diffuse, and specular properties
+    # # Create volume property
+    volume_property = vtk.vtkVolumeProperty()
+    # Ambient, diffuse, and specular properties
+    # Create volume
+    vtk_volume = vtk.vtkVolume()
+    vtk_volume.SetMapper(vtk.vtkGPUVolumeRayCastMapper())
+    vtk_volume.SetProperty(volume_property)
+    vtk_volume.GetMapper().SetInputData(vtk_image)
+
+    # Create renderer
+    renderer = vtk.vtkRenderer()
+    renderer.AddVolume(vtk_volume)
+
+    # Create render window
+    render_window = vtk.vtkRenderWindow()
+    render_window.AddRenderer(renderer)
+    render_window.SetSize(800, 800)
+
+    # Create render window interactor
+    render_window_interactor = vtk.vtkRenderWindowInteractor()
+    render_window_interactor.SetRenderWindow(render_window)
+
+    if capture == True:
+            volume_dims = vtk_volume.GetMapper().GetInput().GetDimensions()
+            capture_frames(render_window, renderer, vtk_volume, volume_dims, num_frames=360)
+    else:
+        # Start interaction
+        render_window.Render()
+        render_window_interactor.Start()
 
 def label_bubbles(volume, bubble_class=1):
     # Apply labeling to the bubble_class within the volume
@@ -70,7 +115,7 @@ def label_bubbles(volume, bubble_class=1):
     labeled_volume, num_features = label(binary_bubbles, structure=structure)
     return labeled_volume, num_features
 
-def visualize_labeled_volume(labeled_volume, num_labels):    
+def visualize_labeled_volume(labeled_volume, num_labels, capture = False):    
     # Convert labeled_volume to VTK array
     vtk_data_array = numpy_support.numpy_to_vtk(num_array=labeled_volume.transpose(2, 1, 0).ravel(), deep=True, array_type=vtk.VTK_INT)
     print("num labels ", num_labels)
@@ -121,9 +166,13 @@ def visualize_labeled_volume(labeled_volume, num_labels):
     render_window_interactor = vtk.vtkRenderWindowInteractor()
     render_window_interactor.SetRenderWindow(render_window)
 
-    # Start interaction
-    render_window.Render()
-    render_window_interactor.Start()
+    if capture == True:
+            volume_dims = volume.GetMapper().GetInput().GetDimensions()
+            capture_frames(render_window, renderer, volume, volume_dims, num_frames=360)
+    else:
+        # Start interaction
+        render_window.Render()
+        render_window_interactor.Start()
 
 def separate_volume(volume, membrane_class=2):
     left_volume = np.copy(volume)
@@ -223,7 +272,7 @@ def clean_volume(volume):
     c_volume = remove_isolated_pixels(volume)
     return c_volume
 
-def visualize_property(property, labeled_volume, csv_file, log = False, side="whole"):
+def visualize_property(property, labeled_volume, csv_file, log = False, side="whole", capture = False):
 
     #Step 1: read the labeled data and read the corresponding csv file with the corresponding properties
     df = pd.read_csv(csv_file)
@@ -306,10 +355,67 @@ def visualize_property(property, labeled_volume, csv_file, log = False, side="wh
     render_window_interactor = vtk.vtkRenderWindowInteractor()
     render_window_interactor.SetRenderWindow(render_window)
 
-    # Start interaction
-    render_window.Render()
-    render_window_interactor.Start()
+    if capture == True:
+            volume_dims = volume.GetMapper().GetInput().GetDimensions()
+            capture_frames(render_window, renderer, volume, volume_dims, num_frames=360)
+    else:
+        # Start interaction
+        render_window.Render()
+        render_window_interactor.Start()
     return
+
+def membrane_block_visualization(volume, filtered_volume, bubble_class=1, membrane_class=2, capture=False):
+
+    membrane_voxels = np.where(volume == membrane_class)
+
+    membrane_coords = list(zip(membrane_voxels[0], membrane_voxels[1], membrane_voxels[2]))
+    #Calculate the amount of pixels touching the membrane 
+    membrane_with_bubble_neighbors = np.zeros_like(volume, dtype=bool)
+    blocking_voxel = 0
+    # Define neighbor offsets for a 6-connected neighborhood
+    neighbor_offsets = [
+        (-1, 0, 0), (1, 0, 0),  # x-axis neighbors
+        (0, -1, 0), (0, 1, 0),  # y-axis neighbors
+        (0, 0, -1), (0, 0, 1)   # z-axis neighbors
+    ]
+
+    touching_bubble_label = []
+    #Step 1: find membrane pixel with bubble neighbor and get the coordinate
+
+    # Iterate over membrane coordinates
+    for z, y, x in membrane_coords:
+        # Check each neighboring voxel
+        for dz, dy, dx in neighbor_offsets:
+            nz, ny, nx = z + dz, y + dy, x + dx
+            # Check if neighbor is within bounds and if it's a bubble
+            if 0 <= nz < volume.shape[0] and 0 <= ny < volume.shape[1] and 0 <= nx < volume.shape[2]:
+                if volume[nz, ny, nx] == bubble_class:
+                    membrane_with_bubble_neighbors[z, y, x] = True
+                    blocking_voxel += 1
+                    if filtered_volume[nz,ny,nx] not in touching_bubble_label: touching_bubble_label.append(filtered_volume[nz,ny,nx])
+                    #print("touching_bubble_coordinate", touching_bubble_label)
+                    break  # Stop checking other neighbors
+
+    print("Blocking voxel number", blocking_voxel)
+
+
+    #Step 2: check the corresponding labeled bubble to that pixel
+    
+    new_volume = np.zeros_like(filtered_volume)
+
+    for label in touching_bubble_label:
+        if label != 0:
+            new_volume[filtered_volume == label] = 1
+        else: continue
+    #Step 3: just show the bubbles with those values and remove the other ones
+    for class_label in np.unique(volume):
+        if class_label not in [0, 1]:  # Assuming 0 is background, 1 is bubble
+            new_volume[volume == class_label] = class_label
+
+    print("Blocking bubble visualization")
+    visualize_volume(new_volume, capture)
+
+    return blocking_voxel
 
 def visualize_volume_realistic(volume):
     # Convert numpy array to VTK array
@@ -412,13 +518,61 @@ def npy_to_vtk(npy_file, vtk_file):
     writer.SetInputData(vtk_image)
     writer.Write()
 
+def capture_frames(render_window, renderer, vtk_volume, volume_dims, num_frames=360, output_folder="C:/Users/andre/Desktop/zeis/frames", distance_multiplier=4.5):
+
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    window_to_image_filter = vtk.vtkWindowToImageFilter()
+    window_to_image_filter.SetInput(render_window)
+    window_to_image_filter.SetInputBufferTypeToRGB()
+    window_to_image_filter.ReadFrontBufferOff()
+
+    image_writer = vtk.vtkPNGWriter()
+
+    # Calculate the center of the volume
+    volume_center = np.array([volume_dims[0]/2, volume_dims[1]/2, volume_dims[2]/2])
+
+    # Get the camera
+    camera = renderer.GetActiveCamera()
+    camera.SetClippingRange(1, 5000)
+    # Set the initial position of the camera to view the x,y plane
+    initial_camera_distance = np.linalg.norm(np.array(camera.GetPosition()) - volume_center) * distance_multiplier
+    camera.SetPosition(volume_center[0], volume_center[1], initial_camera_distance)
+    camera.SetFocalPoint(volume_center)
+    camera.SetViewUp(0, 1, 0)  # Align the up vector with the y-axis
+
+    for i in range(num_frames):
+        # Rotate the camera around the volume
+        angle_rad = 2 * np.pi / num_frames * i
+        x = volume_center[0] + initial_camera_distance * math.sin(angle_rad)
+        z = volume_center[2] + initial_camera_distance * math.cos(angle_rad)
+        camera.SetPosition(x, volume_center[1], z)
+
+        # Render and capture the frame
+        render_window.Render()
+        window_to_image_filter.Modified()
+        image_writer.SetInputConnection(window_to_image_filter.GetOutputPort())
+        image_writer.SetFileName(f"{output_folder}/frame_{i:03d}.png")
+        image_writer.Write()
+
+    # Reset the camera to its initial settings
+    camera.SetPosition(volume_center[0], volume_center[1], initial_camera_distance)
+    camera.SetFocalPoint(volume_center)
+    camera.SetViewUp(0, 1, 0)
+
+
+
+
+
 # # Example usage
 # npy_file = 'C:/Users/andre/Desktop/zeis/filtered_volume_s10.npy'
 # vtk_file = "C:/Users/andre/Desktop/zeis/filtered_volume_s10.vtk"
 # npy_to_vtk(npy_file, vtk_file)
 
 # # # # # Read the TIF stack and convert it to a numpy array
-#volume = tifffile.imread('C:/Users/andre/Desktop/zeis/exp_stack.tif')
+volume = tifffile.imread('C:/Users/andre/Desktop/zeis/maskS9.tif')
+
 # #cleaned_volume = remove_isolated_pixels2(volume, target_class=1)
 # # # # cleaned_volume = remove_small_objects(cleaned_volume, target_class=1)
 
@@ -432,21 +586,30 @@ def npy_to_vtk(npy_file, vtk_file):
 # labeled_volume, num_features = label_bubbles(left_volume)
 
 # # # # #Now you can visualize the labeled_volume
-# #visualize_labeled_volume(labeled_volume, num_features)
+
 # print(num_features)
 # # # # # #Visualize the volume
 
-
 # # #visualize_volume(left_volume)
 
-filtered_volume = np.load("C:/Users/andre/Desktop/zeis/filtered_volume_s10.npy")
+filtered_volume = np.load("C:/Users/andre/Desktop/zeis/filtered_volume_S9.npy")
 
-csv_file = "C:/Users/andre/Desktop/zeis/output_s10.csv"
+# left_volume, right_volume = separate_volume(volume)
 
-#visualize_property("closest_distance", filtered_volume, csv_file, side ="whole")
-visualize_property("elongation", filtered_volume, csv_file, side ="whole", log=True)
-visualize_property("volume", filtered_volume, csv_file, side ="whole", log=True)
-#visualize_property("sphericity", filtered_volume, csv_file, side ="whole")
-visualize_property("flatness", filtered_volume, csv_file, side ="whole", log=True)
+# visualize_volume(right_volume, True)
 
+csv_file = "C:/Users/andre/Desktop/zeis/output_S9.csv"
+
+#blocking_voxel = membrane_block_visualization(volume, filtered_volume, capture=True)
+
+visualize_property("orientation", filtered_volume, csv_file, side ="whole", capture = True)
+#visualize_property("elongation", filtered_volume, csv_file, side ="whole", log=True,capture = True)
+#visualize_property("volume", filtered_volume, csv_file, side ="whole", log=True,capture = True)
+#visualize_property("sphericity", filtered_volume, csv_file, side ="whole",capture = True)
+#visualize_property("flatness", filtered_volume, csv_file, side ="whole", log=True, capture = True)
+
+# labeled_volume, num_features = label_bubbles(volume)
+# print(num_features)
+# visualize_labeled_volume(labeled_volume, num_features, True)
 #visualize_volume_realistic(volume)
+#visualize_labeled_volume(volume, True)
