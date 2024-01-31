@@ -518,7 +518,7 @@ def npy_to_vtk(npy_file, vtk_file):
     writer.SetInputData(vtk_image)
     writer.Write()
 
-def capture_frames(render_window, renderer, vtk_volume, volume_dims, num_frames=360, output_folder="C:/Users/andre/Desktop/zeis/frames", distance_multiplier=4.5):
+def capture_frames(render_window, renderer, vtk_volume, volume_dims, num_frames=360, output_folder="C:/Users/a.colliard/Desktop/zeis_imgs/frames", distance_multiplier=4.5):
 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -571,7 +571,7 @@ def capture_frames(render_window, renderer, vtk_volume, volume_dims, num_frames=
 # npy_to_vtk(npy_file, vtk_file)
 
 # # # # # Read the TIF stack and convert it to a numpy array
-volume = tifffile.imread('C:/Users/andre/Desktop/zeis/maskS9.tif')
+volume = tifffile.imread('C:/Users/a.colliard/Desktop/zeis_imgs/maskS9.tif')
 
 # #cleaned_volume = remove_isolated_pixels2(volume, target_class=1)
 # # # # cleaned_volume = remove_small_objects(cleaned_volume, target_class=1)
@@ -592,17 +592,17 @@ volume = tifffile.imread('C:/Users/andre/Desktop/zeis/maskS9.tif')
 
 # # #visualize_volume(left_volume)
 
-filtered_volume = np.load("C:/Users/andre/Desktop/zeis/filtered_volume_S9.npy")
+#filtered_volume = np.load("C:/Users/andre/Desktop/zeis/filtered_volume_S9.npy")
 
 # left_volume, right_volume = separate_volume(volume)
 
-# visualize_volume(right_volume, True)
+visualize_volume(volume, True)
 
-csv_file = "C:/Users/andre/Desktop/zeis/output_S9.csv"
+#csv_file = "C:/Users/andre/Desktop/zeis/output_S9.csv"
 
 #blocking_voxel = membrane_block_visualization(volume, filtered_volume, capture=True)
 
-visualize_property("orientation", filtered_volume, csv_file, side ="whole", capture = True)
+#visualize_property("orientation", filtered_volume, csv_file, side ="whole", capture = True)
 #visualize_property("elongation", filtered_volume, csv_file, side ="whole", log=True,capture = True)
 #visualize_property("volume", filtered_volume, csv_file, side ="whole", log=True,capture = True)
 #visualize_property("sphericity", filtered_volume, csv_file, side ="whole",capture = True)

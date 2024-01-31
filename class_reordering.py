@@ -23,4 +23,4 @@ def transform_labels(tiff_path, output_path):
     tifffile.imwrite(output_path, images)
 
 # Example usage
-transform_labels('C:/Users/andre/Desktop/zeis/S9_03_HER_03_tomo_1_segmented.tiff', 'C:/Users/andre/Desktop/zeis/maskS9.tif')
+transform_labels('C:/Users/a.colliard/Desktop/zeis_imgs/frame1_65.tif', 'C:/Users/a.colliard/Desktop/zeis_imgs/annfig.tif')
