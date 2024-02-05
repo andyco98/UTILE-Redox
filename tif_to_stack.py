@@ -28,6 +28,29 @@ def create_tiff_stack(folder_path, output_filename):
     images[0].save(output_filename, save_all=True, append_images=images[1:])
 
 # Usage
-folder_path = 'C:/Users/andre/Desktop/zeis/Videos/S7'  # Replace with your folder path
-output_filename = 's7_stack.tif'  # Replace with your desired output file name
-create_tiff_stack(folder_path, output_filename)
+folder_path = 'C:/Users/andre/Desktop/Anntotation/predictions/'  # Replace with your folder path
+output_filename = 'C:/Users/andre/Desktop/Anntotation/predicition.tif'  # Replace with your desired output file name
+#create_tiff_stack(folder_path, output_filename)
+
+
+import imageio
+import os
+
+def create_gif(input_folder, output_filename, frame_duration=0.1):
+    images = []
+    # Ensure the files are sorted correctly
+    file_names = sorted([img for img in os.listdir(input_folder) if img.endswith(".png")])
+
+    for filename in file_names:
+        file_path = os.path.join(input_folder, filename)
+        images.append(imageio.imread(file_path))
+
+    imageio.mimsave(output_filename, images, duration=frame_duration)
+
+# Usage
+input_folder = f'C:/Users/andre/Desktop/Anntotation/test_set/'  # Replace with your frames folder
+output_filename = f'C:/Users/andre/Desktop/Anntotation/real.gif'  # The output file
+frame_duration = 0.1  # Duration of each frame in the GIF in seconds
+create_gif(input_folder, output_filename, frame_duration)
+
+#directory_folders = "C:/Users/andre/Desktop/zeis/gifs/"
