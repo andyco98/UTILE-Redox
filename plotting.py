@@ -298,28 +298,33 @@ def plot_densities(stack_path, target_class=1):
 
     # Visualization
     plt.figure(figsize=(15, 5))
+ 
 
     plt.subplot(1, 3, 1)
     plt.imshow(xy_density, cmap='jet')
     plt.title('XY Plane Density')
-
+    plt.tick_params(left = False, right = False , labelleft = False , 
+                labelbottom = False, bottom = False)
     plt.subplot(1, 3, 2)
     plt.imshow(xz_density, cmap='jet')
     plt.title('XZ Plane Density')
-
+    plt.tick_params(left = False, right = False , labelleft = False , 
+                labelbottom = False, bottom = False)
     plt.subplot(1, 3, 3)
     plt.imshow(zy_density, cmap='jet')
+    plt.tick_params(left = False, right = False , labelleft = False , 
+                labelbottom = False, bottom = False)
     plt.title('ZY Plane Density')
-    plt.savefig("C:/Users/andre/Desktop/zeis/densities_S9.png")
+    plt.savefig("C:/Users/a.colliard/Desktop/zeis_imgs/densities_S9.png")
     plt.show()
 
     
 
-csv_file = "C:/Users/andre/Desktop/zeis/output_s9.csv"
+csv_file = "C:/Users/a.colliard/Desktop/zeis_imgs/outputS9.csv"
 
-stack_path = 'C:/Users/andre/Desktop/zeis/maskS9.tif'
+stack_path = 'C:/Users/a.colliard/Desktop/zeis_imgs/maskS9.tif'
 
-plot_properties(csv_file)
+#plot_properties(csv_file)
 
 #plot_densities(stack_path)
 
