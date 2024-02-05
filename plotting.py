@@ -54,10 +54,10 @@ def plot_properties(csv_file):
     mu, std = np.mean(np.log10(volumes)), np.std(np.log10(volumes))
     x = np.linspace(bin_edges[0], bin_edges[-1], 1000)
     pdf = norm.pdf(x, mu, std)
-    ax1.plot(x, pdf * np.sum(hist_percentages) * np.diff(bin_edges)[0], '-', color='red', label=f'Mean={mu:.2f}, SD={std:.2f}')
+    #ax1.plot(x, pdf * np.sum(hist_percentages) * np.diff(bin_edges)[0], '-', color='red', label=f'Mean={mu:.2f}, SD={std:.2f}')
 
     # Add legend
-    ax1.legend(loc='upper right', fontsize=14)
+    ax1.legend([f"Mean={mu:.2f}, SD={std:.2f}"],loc='upper right', fontsize=14)
 
     ### VOlume computation wihtout log10
     # hist_counts, bin_edges = np.histogram(df["volume"], bins=30)
@@ -107,9 +107,9 @@ def plot_properties(csv_file):
     # Plot the Gaussian distribution
     x = np.linspace(min(df["sphericity"]), max(df["sphericity"]), 1000)
     pdf = norm.pdf(x, mu, std)
-    ax2.plot(x, pdf * np.sum(hist_percentages) * np.diff(bin_edges)[0], '-', color='red', label=f'Mean={mu:.2f}, SD={std:.2f}')
+    #ax2.plot(x, pdf * np.sum(hist_percentages) * np.diff(bin_edges)[0], '-', color='red', label=f'Mean={mu:.2f}, SD={std:.2f}')
             
-    ax2.legend(loc='upper right', fontsize = 14)
+    ax2.legend([f"Mean={mu:.2f}, SD={std:.2f}"],loc='upper right', fontsize = 14)
 
     # # "orientation" #####################################################
     # #Read the data
@@ -179,10 +179,10 @@ def plot_properties(csv_file):
     mu, std = np.mean(np.log10(elongations)), np.std(np.log10(elongations))
     x = np.linspace(bin_edges[0], bin_edges[-1], 1000)
     pdf = norm.pdf(x, mu, std)
-    ax4.plot(x, pdf * np.sum(hist_percentages) * np.diff(bin_edges)[0], '-', color='red', label=f'Mean={mu:.2f}, SD={std:.2f}')
+    #ax4.plot(x, pdf * np.sum(hist_percentages) * np.diff(bin_edges)[0], '-', color='red', label=f'Mean={mu:.2f}, SD={std:.2f}')
 
     # Add legend
-    ax4.legend(loc='upper right', fontsize=14)
+    ax4.legend([f"Mean={mu:.2f}, SD={std:.2f}"],loc='upper right', fontsize=14)
 
 
     #Flatness ###################################################
@@ -214,10 +214,10 @@ def plot_properties(csv_file):
     mu, std = np.mean(np.log10(flatnesses)), np.std(np.log10(flatnesses))
     x = np.linspace(bin_edges[0], bin_edges[-1], 1000)
     pdf = norm.pdf(x, mu, std)
-    ax5.plot(x, pdf * np.sum(hist_percentages) * np.diff(bin_edges)[0], '-', color='red', label=f'Mean={mu:.2f}, SD={std:.2f}')
+    #ax5.plot(x, pdf * np.sum(hist_percentages) * np.diff(bin_edges)[0], '-', color='red', label=f'Mean={mu:.2f}, SD={std:.2f}')
 
     # Add legend
-    ax5.legend(loc='upper right', fontsize=14)
+    ax5.legend([f"Mean={mu:.2f}, SD={std:.2f}"],loc='upper right', fontsize=14)
     # # Manually compute the histogram using numpy
     # hist_counts, bin_edges = np.histogram(df["elongation"], bins=30)
 
@@ -267,16 +267,16 @@ def plot_properties(csv_file):
     # Plot he Gaussian distribution
     x = np.linspace(min(df["closest_distance"]), max(df["closest_distance"]), 1000)
     pdf = norm.pdf(x, mu, std)
-    ax6.plot(x, pdf * np.sum(hist_percentages) * np.diff(bin_edges)[0], '-', color='red', label=f'Mean={mu:.2f}, SD={std:.2f}')
+    #ax6.plot(x, pdf * np.sum(hist_percentages) * np.diff(bin_edges)[0], '-', color='red', label=f'Mean={mu:.2f}, SD={std:.2f}')
             
-    ax6.legend(loc='upper right', fontsize = 14)
+    ax6.legend([f"Mean={mu:.2f}, SD={std:.2f}"],loc='upper right', fontsize = 14)
 
     # Hide the 6th subplot as we only need 5
     #ax5.set_visible(False)
 
 
     plt.tight_layout()
-    plt.savefig("C:/Users/andre/Desktop/zeis/plotsS9.png")
+    plt.savefig("C:/Users/andre/Desktop/zeis/plotsS9_nogaussian.png")
     plt.show()
 
 
@@ -321,5 +321,5 @@ stack_path = 'C:/Users/andre/Desktop/zeis/maskS9.tif'
 
 plot_properties(csv_file)
 
-plot_densities(stack_path)
+#plot_densities(stack_path)
 

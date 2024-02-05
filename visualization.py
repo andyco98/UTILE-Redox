@@ -276,6 +276,21 @@ def visualize_property(property, labeled_volume, csv_file, log = False, side="wh
 
     #Step 1: read the labeled data and read the corresponding csv file with the corresponding properties
     df = pd.read_csv(csv_file)
+    
+    if property == "orientation":
+        #property = "phi"
+        # Normalize theta and phi
+        df['theta_norm'] = df['theta'] / (2 * np.pi)
+        df['phi_norm'] = df['phi'] / np.pi
+
+        # Set weights for theta and phi
+        w_theta = 0.5
+        w_phi = 0.5
+
+        # Calculate the weighted average (linear combination)
+        df['orientation'] = w_theta * df['theta_norm'] + w_phi * df['phi_norm']
+
+
     property_df = df[property][df[property] > 0]
     #Step 2: normalize the properties and extract the corresponding value to map the corresponding color
     # Normalize the column

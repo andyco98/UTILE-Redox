@@ -13,8 +13,8 @@ def create_gif(input_folder, output_filename, frame_duration=0.1):
     imageio.mimsave(output_filename, images, duration=frame_duration)
 
 # Usage
-input_folder = f'C:/Users/andre/Desktop/zeis/gifs/right_frames'  # Replace with your frames folder
-output_filename = f'C:/Users/andre/Desktop/zeis/gifs/right_output.gif'  # The output file
+input_folder = f'C:/Users/andre/Desktop/zeis/gifs/real_frames'  # Replace with your frames folder
+output_filename = f'C:/Users/andre/Desktop/zeis/gifs/real_output.gif'  # The output file
 frame_duration = 0.1  # Duration of each frame in the GIF in seconds
 create_gif(input_folder, output_filename, frame_duration)
 
