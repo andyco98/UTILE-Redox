@@ -1,13 +1,11 @@
 # *UTILE-Redox* - Deep Learning based Tool for Autonomous 3D Bubble Analysis of Vanadium Flow Batteries from Synchrotron X-ray Imaging
 
-![](https://github.com/andyco98/UTILE-Oxy/blob/main/images/workflow.png)
+![](https://github.com/andyco98/UTILE-Redox/blob/main/images/workflow.jpg)
 
 
 We present  an automated workflow using deep learning for the analysis of videos containing oxygen bubbles in PEM electrolyzers by 1. preparing an annotated dataset and training models in order to conduct semantic segmentation of bubbles and 2. automating the extraction of bubble properties for further distribution analysis.
 
 The publication [UTILE-Redox - Deep Learning based Tool for Autonomous 3D Bubble Analysis of Vanadium Flow Batteries from Synchrotron X-ray Imaging]() will be available soon!
-
-
 
 
 ## Description
@@ -16,10 +14,10 @@ This repository contains the Python implementation of the UTILE-Redox software f
 
 The models we present in this work are trained on a specific use-case scenario of interest in VRFB bubble tomographies. Nevertheless, it is possible to fine-tune, re-train or employ another model suitable for your individual case if your data has a strong visual deviation from the presented data here, which was recorded and shown as follows:
 
-![](https://github.com/andyco98/UTILE-Redox/blob/main/images/figexperiment.png)
+![](https://github.com/andyco98/UTILE-Redox/blob/main/images/capture.jpg)
 
 ## Model's benchmark
-In our study, we trained several models to compare their prediction performance on unseen data. We trained specifically three different models on the same dataset composed by :
+In our study, we trained several models to compare their prediction performance on unseen data. We trained specifically four different models on the same dataset composed by :
 
 - U-Net 2D with a ResNeXt 101 backbone 
 - Attention U-Net
@@ -37,26 +35,22 @@ We obtained the following performance results:
 
 Since the F1-Scores are similar a visual inspection was carried out to find the best-performing model:
 
-![](https://github.com/andyco98/UTILE-Oxy/blob/main/images/benchmark.png)
+![](https://github.com/andyco98/UTILE-Redox/blob/main/images/benchamark.jpg)
 
 
 ## Extracted features
 
-### Membrane separation capabilites
+### Membrane separation capabilites and 2D bubble density map from different planes
 
-![](https://github.com/andyco98/UTILE-Oxy/blob/main/images/timeresolved.png)
-
-### 2D bubble density map from different planes
-
-![](https://github.com/andyco98/UTILE-Oxy/blob/main/images/heatmaps.png)
+![](https://github.com/andyco98/UTILE-Redox/blob/main/images/separationanddensity.jpg)
 
 ### Individual bubble shape analysis
 
-![](https://github.com/andyco98/UTILE-Oxy/blob/main/images/individualcorrect.png)
+![](https://github.com/andyco98/UTILE-Redox/blob/main/images/individual.jpg)
 
 ### Bubbly membrane blockage
 
-![](https://github.com/andyco98/UTILE-Oxy/blob/main/images/individualcorrect.png)
+![](https://github.com/andyco98/UTILE-Redox/blob/main/images/blockade.jpg)
 
 ## Installation
 In order to run the actual version of the code, the following steps need to be done:
