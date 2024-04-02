@@ -10,9 +10,6 @@ import csv
 from math import sqrt
 
 ### TO DO ###
-# 1 Enhance the visualization with ParaView, or just wrtie some scripts to automate the tranfer to paraview?
-
-case_name = "S7"
 
 
 def bubble_ratio(volume, voxel_dimensions=(1,1,1), bubble_class=1, background_class=0): #needs to be revised, I think it takes the values of the whole cell and not only the right side
@@ -30,8 +27,8 @@ def bubble_ratio(volume, voxel_dimensions=(1,1,1), bubble_class=1, background_cl
 
     bubble_background_ratio = total_bubble_volume / total_background_volume
     print("Total bubble volume: ", total_bubble_volume) 
-    print("Total bubble volume: ", total_background_volume)
-    print("Bubble background ratio:", bubble_background_ratio) # Replace 'cubic units' with appropriate unit (e.g., cubic millimeters)
+    print("Total background volume: ", total_background_volume)
+    print("Bubble:background ratio:", bubble_background_ratio) # Replace 'cubic units' with appropriate unit (e.g., cubic millimeters)
 
     return bubble_background_ratio
 
@@ -77,7 +74,7 @@ def wall_proximity(args): #first we map the boundaries of the membrane, then we 
 
 
 
-def individual_analysis(volume, membrane_class=2):
+def individual_analysis(volume,case_name, membrane_class=2):
 
     # Label the volume into individual bubbles
     labeled_volume, num_features = label_bubbles(volume)
@@ -258,7 +255,7 @@ def individual_analysis(volume, membrane_class=2):
 
 
     # Specify the filename
-    filename = f"C:/Users/andre/Desktop/zeis/output_{case_name}.csv"
+    filename = f"./{case_name}/output_{case_name}.csv"
 
     # Write to CSV
     with open(filename, 'w', newline='') as csvfile:
@@ -270,12 +267,12 @@ def individual_analysis(volume, membrane_class=2):
         # Write the data
         csvwriter.writerows(data)
 
-    np.save(f"C:/Users/andre/Desktop/zeis/filtered_volume_{case_name}.npy", filtered_volume)
+    np.save(f"./{case_name}/filtered_volume_{case_name}.npy", filtered_volume)
 
     return filtered_volume, membrane_coordinates
 
 
-volume = tifffile.imread('C:/Users/andre/Desktop/zeis/s7_stack.tif')
+# volume = tifffile.imread('C:/Users/andre/Desktop/zeis/s7_stack.tif')
 # print("Volume load done!")
 
 # left_volume, right_volume = separate_volume(volume)
@@ -302,6 +299,6 @@ volume = tifffile.imread('C:/Users/andre/Desktop/zeis/s7_stack.tif')
 
 #visualize_labeled_volume()
 
-filtered_volume = np.load("C:/Users/andre/Desktop/zeis/filtered_volume_S7.npy")
-blocking_voxel = membrane_block_visualization(volume, filtered_volume)
+# filtered_volume = np.load("C:/Users/andre/Desktop/zeis/filtered_volume_S7.npy")
+# blocking_voxel = membrane_block_visualization(volume, filtered_volume)
 

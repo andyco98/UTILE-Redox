@@ -276,11 +276,11 @@ def plot_properties(csv_file):
 
 
     plt.tight_layout()
-    plt.savefig("C:/Users/andre/Desktop/zeis/plotsS9_nogaussian.png")
+    plt.savefig(f"./{case_name}/{case_name}_plots.png")
     plt.show()
 
 
-def plot_densities(stack_path, target_class=1):
+def plot_densities(stack_path,case_name, target_class=1):
     with tifffile.TiffFile(stack_path) as tif:
         images = tif.asarray()
 
@@ -315,14 +315,14 @@ def plot_densities(stack_path, target_class=1):
     plt.tick_params(left = False, right = False , labelleft = False , 
                 labelbottom = False, bottom = False)
     plt.title('ZY Plane Density')
-    plt.savefig("C:/Users/a.colliard/Desktop/zeis_imgs/densities_S9.png")
+    plt.savefig(f"./{case_name}/densities_{case_name}.png")
     plt.show()
 
     
 
-csv_file = "C:/Users/a.colliard/Desktop/zeis_imgs/outputS9.csv"
+# csv_file = "C:/Users/a.colliard/Desktop/zeis_imgs/outputS9.csv"
 
-stack_path = 'C:/Users/a.colliard/Desktop/zeis_imgs/maskS9.tif'
+# stack_path = 'C:/Users/a.colliard/Desktop/zeis_imgs/maskS9.tif'
 
 #plot_properties(csv_file)
 

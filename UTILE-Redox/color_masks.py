@@ -25,5 +25,5 @@ def map_classes_to_colors(image_path, output_path):
     # Save the RGB image
     Image.fromarray(rgb_image).save(output_path)
 
-# Usage
-map_classes_to_colors('C:/Users/a.colliard/Desktop/zeis_imgs/annfig.tif', 'C:/Users/a.colliard/Desktop/zeis_imgs/output_rgb_image.png')
+# # Usage
+# map_classes_to_colors('C:/Users/a.colliard/Desktop/zeis_imgs/annfig.tif', 'C:/Users/a.colliard/Desktop/zeis_imgs/output_rgb_image.png')

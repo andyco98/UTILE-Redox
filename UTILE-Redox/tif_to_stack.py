@@ -1,6 +1,7 @@
 import os
 from PIL import Image
 import re
+import imageio
 
 def numerical_sort(value):
     """
@@ -33,8 +34,6 @@ output_filename = 'C:/Users/andre/Desktop/Anntotation/predicition.tif'  # Replac
 #create_tiff_stack(folder_path, output_filename)
 
 
-import imageio
-import os
 
 def create_gif(input_folder, output_filename, frame_duration=0.1):
     images = []
@@ -47,10 +46,10 @@ def create_gif(input_folder, output_filename, frame_duration=0.1):
 
     imageio.mimsave(output_filename, images, duration=frame_duration)
 
-# Usage
-input_folder = f'C:/Users/andre/Desktop/Anntotation/test_set/'  # Replace with your frames folder
-output_filename = f'C:/Users/andre/Desktop/Anntotation/real.gif'  # The output file
-frame_duration = 0.1  # Duration of each frame in the GIF in seconds
-create_gif(input_folder, output_filename, frame_duration)
+# # Usage
+# input_folder = f'C:/Users/andre/Desktop/Anntotation/test_set/'  # Replace with your frames folder
+# output_filename = f'C:/Users/andre/Desktop/Anntotation/real.gif'  # The output file
+# frame_duration = 0.1  # Duration of each frame in the GIF in seconds
+# create_gif(input_folder, output_filename, frame_duration)
 
 #directory_folders = "C:/Users/andre/Desktop/zeis/gifs/"

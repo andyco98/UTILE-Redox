@@ -22,5 +22,5 @@ def transform_labels(tiff_path, output_path):
     # Save the transformed stack
     tifffile.imwrite(output_path, images)
 
-# Example usage
-transform_labels('C:/Users/a.colliard/Desktop/zeis_imgs/frame1_65.tif', 'C:/Users/a.colliard/Desktop/zeis_imgs/annfig.tif')
+# # Example usage
+# transform_labels('C:/Users/a.colliard/Desktop/zeis_imgs/frame1_65.tif', 'C:/Users/a.colliard/Desktop/zeis_imgs/annfig.tif')

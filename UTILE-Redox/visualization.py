@@ -586,7 +586,7 @@ def capture_frames(render_window, renderer, vtk_volume, volume_dims, num_frames=
 # npy_to_vtk(npy_file, vtk_file)
 
 # # # # # Read the TIF stack and convert it to a numpy array
-volume = tifffile.imread('C:/Users/a.colliard/Desktop/zeis_imgs/maskS9.tif')
+# volume = tifffile.imread('C:/Users/a.colliard/Desktop/zeis_imgs/maskS9.tif')
 
 # #cleaned_volume = remove_isolated_pixels2(volume, target_class=1)
 # # # # cleaned_volume = remove_small_objects(cleaned_volume, target_class=1)
@@ -611,7 +611,7 @@ volume = tifffile.imread('C:/Users/a.colliard/Desktop/zeis_imgs/maskS9.tif')
 
 # left_volume, right_volume = separate_volume(volume)
 
-visualize_volume(volume, True)
+# visualize_volume(volume, True)
 
 #csv_file = "C:/Users/andre/Desktop/zeis/output_S9.csv"
 
