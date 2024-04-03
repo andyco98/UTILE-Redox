@@ -55,7 +55,7 @@ Since the F1-Scores are similar a visual inspection was carried out to find the 
 ## Installation
 In order to run the actual version of the code, the following steps need to be done:
 - Clone the repository
-- Create a new environment using Anaconda using Python 3.8 or superior
+- Create a new environment using Anaconda using Python 3.10
 - Pip install the jupyter notebook library
 
     ```
@@ -69,7 +69,7 @@ In order to run the actual version of the code, the following steps need to be d
 The following libraries are needed to run the program:
 
   ```
-   pip install opencv-python, numpy, pillow, segmentation_models, keras, tensorflow, matplotlib, scikit-learn, pandas
+   pip install opencv-python, numpy, pillow, keras, tensorflow==2.11, matplotlib, scikit-image, pandas, tifffile, vtk, 
 
    ```
 ### Notes

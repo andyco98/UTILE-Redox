@@ -33,6 +33,31 @@ folder_path = 'C:/Users/andre/Desktop/Anntotation/predictions/'  # Replace with 
 output_filename = 'C:/Users/andre/Desktop/Anntotation/predicition.tif'  # Replace with your desired output file name
 #create_tiff_stack(folder_path, output_filename)
 
+def save_tif_stack_as_individual_images(tif_stack_path, case_name):
+    """
+    Save each slice of a TIF stack as an individual TIF image.
+
+    Parameters:
+    - tif_stack_path: Path to the input TIF stack.
+    - output_folder: Folder where individual TIF images will be saved.
+    """
+    # Ensure the output folder exists
+    if not os.path.exists(f"./{case_name}/slices"):
+        os.makedirs(f"./{case_name}/slices")
+
+    # Open the TIF stack
+    tif_stack = Image.open(tif_stack_path)
+    
+    # Loop through each frame in the stack
+    for i in range(tif_stack.n_frames):
+        tif_stack.seek(i)
+        
+        # Define the output file path
+        output_file_path = os.path.join(f"./{case_name}/slices", f"slice_{i}.tif")
+        
+        # Save the current frame as an individual TIF image
+        tif_stack.save(output_file_path)
+
 
 
 def create_gif(input_folder, output_filename, frame_duration=0.1):

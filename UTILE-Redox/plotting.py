@@ -8,7 +8,7 @@ import tifffile
 
 ## TO DO ##
 
-def plot_properties(csv_file):
+def plot_properties(csv_file, case_name):
     #Read the csv
     df = pd.read_csv(csv_file)
 

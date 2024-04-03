@@ -74,7 +74,7 @@ def wall_proximity(args): #first we map the boundaries of the membrane, then we 
 
 
 
-def individual_analysis(volume,case_name, membrane_class=2):
+def individual_analysis(volume, case_name, membrane_class=2):
 
     # Label the volume into individual bubbles
     labeled_volume, num_features = label_bubbles(volume)
@@ -244,7 +244,7 @@ def individual_analysis(volume,case_name, membrane_class=2):
 
     ### Visualization of the filtered volume
     print(len(np.unique(filtered_volume)- 1))
-    visualize_labeled_volume(filtered_volume, len(np.unique(filtered_volume) - 1))
+    visualize_labeled_volume(filtered_volume, len(np.unique(filtered_volume) - 1), case_name)
 
     ### Write the CSV file with the result lists
 

@@ -7,11 +7,12 @@ import pandas as pd
 from matplotlib import cm
 import os
 import math
-
+import imageio
+import shutil
 ### TO DO ###
 
 
-def visualize_volume(volume, capture = False):
+def visualize_volume(volume, case_name, capture = False):
     # Convert numpy array to VTK array
     vtk_data_array = numpy_support.numpy_to_vtk(num_array=volume.transpose(2, 1, 0).ravel(), deep=True, array_type=vtk.VTK_UNSIGNED_CHAR)
 
@@ -62,13 +63,13 @@ def visualize_volume(volume, capture = False):
 
     if capture == True:
             volume_dims = vtk_volume.GetMapper().GetInput().GetDimensions()
-            capture_frames(render_window, renderer, vtk_volume, volume_dims, num_frames=360)
+            capture_frames(render_window, renderer, case_name, volume_dims, num_frames=360)
     else:
         # Start interaction
         render_window.Render()
         render_window_interactor.Start()
 
-def visualize_real_volume(volume, capture = False):
+def visualize_real_volume(volume, case_name, capture = False):
     # Convert numpy array to VTK array
     vtk_data_array = numpy_support.numpy_to_vtk(num_array=volume.transpose(2, 1, 0).ravel(), deep=True, array_type=vtk.VTK_UNSIGNED_CHAR)
 
@@ -102,7 +103,7 @@ def visualize_real_volume(volume, capture = False):
 
     if capture == True:
             volume_dims = vtk_volume.GetMapper().GetInput().GetDimensions()
-            capture_frames(render_window, renderer, vtk_volume, volume_dims, num_frames=360)
+            capture_frames(render_window, renderer,case_name,volume_dims, num_frames=360)
     else:
         # Start interaction
         render_window.Render()
@@ -115,7 +116,7 @@ def label_bubbles(volume, bubble_class=1):
     labeled_volume, num_features = label(binary_bubbles, structure=structure)
     return labeled_volume, num_features
 
-def visualize_labeled_volume(labeled_volume, num_labels, capture = False):    
+def visualize_labeled_volume(labeled_volume, num_labels, case_name, capture = False):    
     # Convert labeled_volume to VTK array
     vtk_data_array = numpy_support.numpy_to_vtk(num_array=labeled_volume.transpose(2, 1, 0).ravel(), deep=True, array_type=vtk.VTK_INT)
     print("num labels ", num_labels)
@@ -168,7 +169,7 @@ def visualize_labeled_volume(labeled_volume, num_labels, capture = False):
 
     if capture == True:
             volume_dims = volume.GetMapper().GetInput().GetDimensions()
-            capture_frames(render_window, renderer, volume, volume_dims, num_frames=360)
+            capture_frames(render_window, renderer, case_name, volume_dims)
     else:
         # Start interaction
         render_window.Render()
@@ -272,7 +273,7 @@ def clean_volume(volume):
     c_volume = remove_isolated_pixels(volume)
     return c_volume
 
-def visualize_property(property, labeled_volume, csv_file, log = False, side="whole", capture = False):
+def visualize_property(property, labeled_volume, csv_file, case_name, log = False, side="whole", capture = False):
 
     #Step 1: read the labeled data and read the corresponding csv file with the corresponding properties
     df = pd.read_csv(csv_file)
@@ -372,14 +373,14 @@ def visualize_property(property, labeled_volume, csv_file, log = False, side="wh
 
     if capture == True:
             volume_dims = volume.GetMapper().GetInput().GetDimensions()
-            capture_frames(render_window, renderer, volume, volume_dims, num_frames=360)
+            capture_frames(render_window, renderer, case_name, volume_dims, num_frames=360)
     else:
         # Start interaction
         render_window.Render()
         render_window_interactor.Start()
     return
 
-def membrane_block_visualization(volume, filtered_volume, bubble_class=1, membrane_class=2, capture=False):
+def membrane_block_visualization(volume, filtered_volume, case_name, bubble_class=1, membrane_class=2, capture=False):
 
     membrane_voxels = np.where(volume == membrane_class)
 
@@ -428,7 +429,7 @@ def membrane_block_visualization(volume, filtered_volume, bubble_class=1, membra
             new_volume[volume == class_label] = class_label
 
     print("Blocking bubble visualization")
-    visualize_volume(new_volume, capture)
+    visualize_volume(new_volume, case_name, capture)
 
     return blocking_voxel
 
@@ -533,8 +534,8 @@ def npy_to_vtk(npy_file, vtk_file):
     writer.SetInputData(vtk_image)
     writer.Write()
 
-def capture_frames(render_window, renderer, vtk_volume, volume_dims, num_frames=360, output_folder="C:/Users/a.colliard/Desktop/zeis_imgs/frames", distance_multiplier=4.5):
-
+def capture_frames(render_window, renderer, case_name, volume_dims, num_frames=360, distance_multiplier=4.5):
+    output_folder = f"./{case_name}/frames"
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
@@ -576,6 +577,25 @@ def capture_frames(render_window, renderer, vtk_volume, volume_dims, num_frames=
     camera.SetFocalPoint(volume_center)
     camera.SetViewUp(0, 1, 0)
 
+    #Create Gif out of the frames
+    images = []
+    # Ensure the files are sorted correctly
+    file_names = sorted([img for img in os.listdir(output_folder) if img.endswith(".png")])
+
+    for filename in file_names:
+        file_path = os.path.join(output_folder, filename)
+        images.append(imageio.imread(file_path))
+    
+    i = 1
+    output_filename = f"./{case_name}/custom_gif_{i}.gif"
+
+    while os.path.isfile(output_filename):
+        i+=1
+        output_filename = f"./{case_name}/custom_gif_{i}.gif"
+
+    imageio.mimsave(output_filename, images, duration=0.1)
+
+    shutil.rmtree(output_folder)
 
 
 
