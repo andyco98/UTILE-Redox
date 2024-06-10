@@ -73,3 +73,5 @@ The following libraries are needed to run the program:
 
    ```
 ### Notes
+
+Training and validation datasets and trained models are available at Zenodo: https://doi.org/10.5281/zenodo.11547023.
